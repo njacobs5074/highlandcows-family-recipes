@@ -1,15 +1,10 @@
 package app
 
 import cask.main.Routes
-import scalatags.Text.all._
-
-import view.bootstrap._
-import view._
+import cask.model.Request
 import org.slf4j.LoggerFactory
-import cask.model.{ Request, Response }
-import cask.router.Result
-
-import scala.util._
+import scalatags.Text.all._
+import view._
 
 class Controller extends cask.Routes {
 
