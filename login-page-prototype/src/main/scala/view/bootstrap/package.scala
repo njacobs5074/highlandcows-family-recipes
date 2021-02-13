@@ -7,11 +7,11 @@ package object bootstrap {
 
   /** Generate the HTML head tag with view.bootstrap scripts already provided */
   def head(
-      titleText: String,
-      description: Option[String] = None,
-      author: Option[String] = None,
-      additionalStyleSheets: Seq[String] = Seq.empty[String],
-      favIcon: String = "favicon.ico"
+    titleText: String,
+    description: Option[String] = None,
+    author: Option[String] = None,
+    additionalStyleSheets: Seq[String] = Seq.empty[String],
+    favIcon: String = "favicon.ico"
   ): Frag = {
     tags.head(
       meta(charset := "utf-8"),
