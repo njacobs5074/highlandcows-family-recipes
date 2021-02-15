@@ -8,8 +8,19 @@ case class User(username: String, password: String, created: Date, id: Int = 0) 
 }
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
-case class UserSession(token: String, userId: Int, expiry: Date, created: Date, id: Int = 0) {
+case class UserSession(
+    token: String,
+    userId: Int,
+    expiry: Date,
+    created: Date,
+    sessionKey: Option[String] = None,
+    id: Int = 0
+) {
   var user: Option[User] = None
 
-  lazy val encoded: String = util.secureHash(s"$token|$userId")
+  def isExpired(): Boolean = new Date().after(expiry)
+}
+
+object UserSession {
+  def generateSessionKey(token: String, userId: Int): String = util.secureHash(s"$token|$userId")
 }

@@ -16,26 +16,26 @@ class UsersDAO(database: Database) {
   def find(id: Int): Option[User] = {
     val action = quote(for {
       user <- database.schema.users.filter(_.id == lift(id))
-      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
+      userSession <-
+        database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
     } yield (user, userSession))
 
-    database.ctx.run(action).headOption.map {
-      case (user, maybeUserSession) =>
-        user.userSession = maybeUserSession
-        user
+    database.ctx.run(action).headOption.map { case (user, maybeUserSession) =>
+      user.userSession = maybeUserSession
+      user
     }
   }
 
   def find(username: String): Option[User] = {
     val action = quote(for {
       user <- database.schema.users.filter(_.username == lift(username))
-      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
+      userSession <-
+        database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
     } yield (user, userSession))
 
-    database.ctx.run(action).headOption.map {
-      case (user, maybeUserSession) =>
-        user.userSession = maybeUserSession
-        user
+    database.ctx.run(action).headOption.map { case (user, maybeUserSession) =>
+      user.userSession = maybeUserSession
+      user
     }
   }
 

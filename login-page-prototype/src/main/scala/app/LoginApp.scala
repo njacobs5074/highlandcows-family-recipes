@@ -11,20 +11,27 @@ import view._
 
 import scala.util.{ Failure, Success, Try }
 
-class Controller(userService: service.UserService) extends cask.Routes {
+class Controller(userService: service.UserService, userSessionService: service.UserSessionService)
+    extends cask.Routes {
 
   val logger: Logger = LoggerFactory.getLogger(getClass)
 
   val sessionName = "user-session"
 
-  class loggedIn extends cask.RawDecorator {
-    def wrapFunction(request: Request, delegate: Delegate): Result[Raw] = {
-      val session: Option[cask.Cookie] = request.cookies.find { cookie => cookie._1 == sessionName }.map(_._2)
+  /**
+    * Decorator that makes our user session cookie available to endpoints if they want it.
+    * Will be available as an addtional argument, `session`
+    */
+  class LoggedIn extends cask.RawDecorator {
+    override def wrapFunction(request: Request, delegate: Delegate): Result[Raw] = {
+      val session: Option[cask.Cookie] = request.cookies
+        .find { cookie => cookie._1 == sessionName }
+        .map(_._2)
       delegate(Map("session" -> session))
     }
   }
 
-  override val decorators: Seq[loggedIn] = Seq(new loggedIn())
+  override val decorators: Seq[cask.RawDecorator] = Seq(new LoggedIn())
 
   @cask.staticResources("/static")
   def staticResources(): String = "static"
@@ -49,20 +56,41 @@ class Controller(userService: service.UserService) extends cask.Routes {
   @cask.postForm("/")
   def post(inputEmail: String, inputPassword: String): Response[String] = {
     def setUserSession(userSession: model.UserSession) = {
-      cask.Response(
-        "",
-        301,
-        headers = Seq("Location" -> "/main"),
-        cookies = Seq(cask.Cookie(sessionName, userSession.encoded, httpOnly = true)) // need to set secure but only if https
-      )
+      userSession.sessionKey match {
+        case Some(sessionKey) =>
+          cask.Response(
+            "",
+            301,
+            headers = Seq("Location" -> "/main"),
+            cookies = Seq(
+              cask.Cookie(sessionName, sessionKey, httpOnly = true)
+            ) // need to set secure but only if https
+          )
+        case None =>
+          logger.warn(
+            s"User session for $inputEmail was not correctly created -- redirecting to home page"
+          )
+          cask.Response(
+            "",
+            301,
+            headers = Seq("Location" -> "/"),
+            cookies =
+              Seq(cask.Cookie(sessionName, "", expires = java.time.Instant.EPOCH, httpOnly = true))
+          )
+
+      }
     }
 
     Try(userService.authenticate(inputEmail, inputPassword)) match {
       case Success(user) if user.userSession.isDefined =>
-        setUserSession(user.userSession.get)
+        if (user.userSession.get.isExpired()) {
+          setUserSession(userSessionService.createNewSession(inputEmail))
+        } else {
+          setUserSession(user.userSession.get)
+        }
 
       case Success(user) =>
-        Try(userService.createNewSession(inputEmail)) match {
+        Try(userSessionService.createNewSession(inputEmail)) match {
           case Success(userSession) =>
             setUserSession(userSession)
 
@@ -87,7 +115,8 @@ class Controller(userService: service.UserService) extends cask.Routes {
       "",
       301,
       headers = Seq("Location" -> "/"),
-      cookies = Seq(cask.Cookie(sessionName, "", expires = java.time.Instant.EPOCH, httpOnly = true))
+      cookies =
+        Seq(cask.Cookie(sessionName, "", expires = java.time.Instant.EPOCH, httpOnly = true))
     )
   }
 
@@ -117,7 +146,12 @@ object LoginApp extends cask.Main {
     Try(Database()) match {
       case Success(database) =>
         sys.addShutdownHook(database.close())
-        Seq(new Controller(new service.UserService(database)))
+        Seq(
+          new Controller(
+            new service.UserService(database),
+            new service.UserSessionService(database)
+          )
+        )
 
       case Failure(t) =>
         throw t

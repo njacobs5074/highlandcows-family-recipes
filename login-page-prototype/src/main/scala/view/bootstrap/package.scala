@@ -22,7 +22,8 @@ package object bootstrap {
       link(rel := "icon", href := favIcon),
       tags2.title(titleText),
       link(href := "/static/view/bootstrap/css/bootstrap.min.css", rel := "stylesheet"),
-      for (stylesheet <- additionalStyleSheets) yield link(href := stylesheet, rel := "stylesheet")
+      for (stylesheet <- additionalStyleSheets)
+        yield link(href := stylesheet, rel := "stylesheet")
     )
   }
 }

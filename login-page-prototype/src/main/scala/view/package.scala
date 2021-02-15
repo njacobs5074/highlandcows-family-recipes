@@ -27,8 +27,11 @@ package object view {
           placeholder := "Password",
           required
         ),
-        div(cls := "checkbox")(label(input(`type` := "checkbox", value := "remember-me")("Remember me"))),
-        for (error <- errorMessage) yield i(color.red)(error),
+        div(cls := "checkbox")(
+          label(input(`type` := "checkbox", value := "remember-me")("Remember me"))
+        ),
+        for (error <- errorMessage)
+          yield i(color.red)(error),
         button(cls := "btn btn-lg btn-primary btn-block", `type` := "submit")("Login")
       )
     )

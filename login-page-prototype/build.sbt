@@ -24,6 +24,7 @@ flywayLocations += "filesystem:conf/migrations"
 
 addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "4.4.8" cross CrossVersion.full)
 scalacOptions += "-Yrangepos"
+scalacOptions += "-deprecation"
 
 inThisBuild(
   List(
