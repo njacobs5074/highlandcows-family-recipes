@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion := "2.13.4"
+ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
@@ -25,6 +25,7 @@ flywayLocations += "filesystem:conf/migrations"
 addCompilerPlugin("org.scalameta" % "semanticdb-scalac" % "4.4.8" cross CrossVersion.full)
 scalacOptions += "-Yrangepos"
 scalacOptions += "-deprecation"
+scalacOptions += s"-P:semanticdb:sourceroot:${System.getProperty("user.dir")}"
 
 inThisBuild(
   List(
