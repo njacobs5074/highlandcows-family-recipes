@@ -77,9 +77,7 @@ package object model {
     // Instantiate the default database -- see 'database.default' in application.conf
     val mainDatabase: Database = {
       val defaultConfig: String = app.config.getString("database.defaultConfig")
-      val databaseConfig: config.DatabaseConfig = app.config.as[config.DatabaseConfig](
-        s"database.$defaultConfig"
-      )
+      val databaseConfig: config.DatabaseConfig = app.config.as[config.DatabaseConfig](s"database.$defaultConfig")
       new Database(databaseConfig)
     }
   }
