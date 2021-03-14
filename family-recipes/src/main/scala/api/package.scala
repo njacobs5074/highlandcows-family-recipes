@@ -1,5 +1,7 @@
 import io.undertow.util.HeaderMap
 
+import upickle.default.{ ReadWriter => RW, macroRW }
+
 import scala.util.Try
 
 package object api {
@@ -19,5 +21,10 @@ package object api {
 
   implicit class HeaderValuesExt(headerMap: HeaderMap) {
     def getHeader(fieldName: String): Option[String] = Option(headerMap.get(fieldName)).flatMap(header => Option(header.getFirst))
+  }
+
+  case class Response(statusCode: Int, statusText: Option[String] = None, data: Option[ujson.Value] = None)
+  object Response {
+    implicit val rw: RW[Response] = macroRW
   }
 }

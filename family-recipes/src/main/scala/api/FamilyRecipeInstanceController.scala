@@ -11,11 +11,23 @@ class FamilyRecipeInstanceController extends ApiRoutes {
     */
   @authenticated("createInstance")
   @cask.post("/familyRecipeInstance")
-  def createInstance(request: cask.Request): String = {
+  def familyRecipeInstance(request: cask.Request): String = {
 
     val payload = request.as[dto.FamilyRecipeInstanceDTO]
-    upickle.default.write(service.FamilyRecipeInstanceService().createFamilyRecipeInstance(payload))
+    val response = service.FamilyRecipeInstanceService().createFamilyRecipeInstance(payload)
+
+    upickle.default.write(api.Response(200, Some("Created"), data = Some(upickle.default.writeJs(response))))
   }
 
+  /** Endpoint to allow resetting an admin user's password */
+  @authenticated("createInstance")
+  @cask.post("/resetAdminPassword")
+  def resetAdminPassword(request: cask.Request) = {
+
+    val payload = request.as[dto.ResetAdminPasswordDTO]
+    service.FamilyRecipeInstanceService().resetAdminPassword(payload)
+
+    upickle.default.write(api.Response(200, Some("Password updated")))
+  }
   initialize()
 }

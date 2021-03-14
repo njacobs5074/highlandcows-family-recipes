@@ -3,7 +3,6 @@ import upickle.default.{ ReadWriter => RW, macroRW }
 package object dto {
 
   case class FamilyRecipeInstanceDTO(name: String, description: String, adminUserEmail: String, password: Option[String])
-
   object FamilyRecipeInstanceDTO {
 
     def apply(familyRecipeInstance: model.FamilyRecipeInstance): FamilyRecipeInstanceDTO = {
@@ -20,9 +19,13 @@ package object dto {
   }
 
   case class UserDTO(username: String, password: String, familyRecipeInstance: String)
-
   object UserDTO {
     implicit val rw: RW[UserDTO] = macroRW
+  }
+
+  case class ResetAdminPasswordDTO(adminUserEmail: String, oldPassword: String, newPassword: String)
+  object ResetAdminPasswordDTO {
+    implicit val rw: RW[ResetAdminPasswordDTO] = macroRW
   }
 
 }

@@ -1,7 +1,7 @@
 package api
 
 import cask.model.Response.Raw
-import cask.model.{ Request, Response }
+import cask.model.{ Request, Response => CaskResponse }
 import cask.router.Result
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
@@ -23,11 +23,11 @@ class wrapExceptions() extends cask.RawDecorator {
             logger.warn(s"""${apiError.statusText.map(statusText => s"message=$statusText ").getOrElse("")}
                  |status=${apiError.statusCode}
                  |${apiError.data.map(data => s"data=$data").getOrElse("")}""".stripMargin.replace('\n', ' '))
-            Result.Success(Response[String](apiError.statusText.getOrElse(""), apiError.statusCode, apiError.headers))
+            Result.Success(CaskResponse[String](apiError.statusText.getOrElse(""), apiError.statusCode, apiError.headers))
           case t =>
             val errmsg = Option(t.getMessage).getOrElse(t.getClass.getSimpleName)
             logger.warn(s"""message=$errmsg status=500""".stripMargin.replace('\n', ' '))
-            Result.Success(Response[String](errmsg, 500))
+            Result.Success(CaskResponse[String](errmsg, 500))
         }
 
       case result => result

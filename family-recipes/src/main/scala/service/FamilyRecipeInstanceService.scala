@@ -49,4 +49,17 @@ class FamilyRecipeInstanceService(database: Database) {
       }
     }
   }
+
+  def resetAdminPassword(resetAdminPasswordDTO: ResetAdminPasswordDTO): Unit = {
+    database.Users().find(resetAdminPasswordDTO.adminUserEmail) match {
+      case Some(user) if util.secureHash(resetAdminPasswordDTO.oldPassword) == user.password =>
+        database.Users().update(user.copy(password = util.secureHash(resetAdminPasswordDTO.newPassword)))
+
+      case Some(_) =>
+        throw api.ApiError(403)
+
+      case None =>
+        throw api.ApiError(404, Some(s"User not found"))
+    }
+  }
 }
