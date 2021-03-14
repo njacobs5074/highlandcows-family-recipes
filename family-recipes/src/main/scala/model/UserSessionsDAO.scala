@@ -4,9 +4,7 @@ class UserSessionsDAO(database: Database) {
   import database.ctx._
 
   def insert(userSession: UserSession): UserSession = {
-    val id = database.ctx.run(
-      database.schema.userSessions.insert(lift(userSession)).returningGenerated(_.id)
-    )
+    val id = database.ctx.run(database.schema.userSessions.insert(lift(userSession)).returningGenerated(_.id))
     database.ctx.run(database.schema.userSessions.filter(_.id == lift(id))).head
   }
 
@@ -35,8 +33,6 @@ class UserSessionsDAO(database: Database) {
     }
   }
 
-  def delete(id: Int): Unit = {
-    database.ctx.run(database.schema.userSessions.filter(_.id == lift(id)).delete)
-  }
+  def delete(id: Int): Unit = database.ctx.run(database.schema.userSessions.filter(_.id == lift(id)).delete)
 
 }

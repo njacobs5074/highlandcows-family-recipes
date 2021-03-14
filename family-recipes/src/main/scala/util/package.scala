@@ -7,8 +7,7 @@ package object util {
   def secureHash(s: String): String = {
     val secretKey = app.config.as[String]("secretKey")
 
-    val hmac = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, secretKey.getBytes).hmac(s.getBytes)
+    val hmac: Array[Byte] = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, secretKey.getBytes).hmac(s.getBytes)
     Base64.encodeBase64URLSafeString(hmac)
   }
-
 }
