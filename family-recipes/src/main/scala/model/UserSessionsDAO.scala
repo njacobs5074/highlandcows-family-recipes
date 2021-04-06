@@ -12,7 +12,7 @@ class UserSessionsDAO(database: Database) {
 
     val action = quote(for {
       userSession <- database.schema.userSessions.filter(_.id == lift(id))
-      user <- database.schema.users.join(user => user.id == userSession.userId)
+      user <- database.schema.users.join(_.id == userSession.userId)
     } yield (userSession, user))
 
     database.ctx.run(action).headOption.map { case (userSession, user) =>
@@ -23,8 +23,8 @@ class UserSessionsDAO(database: Database) {
 
   def findBySessionToken(secureSessionToken: String): Option[UserSession] = {
     val action = quote(for {
-      userSession <- database.schema.userSessions.filter(_.sessionKey == lift(Option(secureSessionToken)))
-      user <- database.schema.users.join(user => user.id == userSession.userId)
+      userSession <- database.schema.userSessions.filter(_.sessionKey.exists(_ == lift(secureSessionToken)))
+      user <- database.schema.users.join(_.id == userSession.userId)
     } yield (userSession, user))
 
     database.ctx.run(action).headOption.map { case (userSession, user) =>

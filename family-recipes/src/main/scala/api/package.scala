@@ -1,5 +1,4 @@
 import io.undertow.util.HeaderMap
-
 import upickle.default.{ ReadWriter => RW, macroRW }
 
 import scala.util.Try
@@ -7,16 +6,20 @@ import scala.util.Try
 package object api {
 
   case class ApiError(
-    statusCode: Int,
-    statusText: Option[String] = None,
-    data: Option[Any] = None,
-    headers: Seq[(String, String)] = Nil
+      statusCode: Int,
+      statusText: Option[String] = None,
+      data: Option[Any] = None,
+      headers: Seq[(String, String)] = Nil,
+      logAtErrorLevel: Boolean = false
   ) extends Exception(statusText.orNull)
 
+  val AuthenticationError = ApiError(403)
+
   implicit class RequestExt(request: cask.Request) {
-    def as[T: upickle.default.Reader]: T = Try(upickle.default.read[T](request.text())).getOrElse {
-      throw api.ApiError(400, Some(s"Malformed JSON"), Some(request.text()))
-    }
+    def as[T: upickle.default.Reader]: T =
+      Try(upickle.default.read[T](request.text())).getOrElse {
+        throw api.ApiError(400, Some(s"Malformed JSON"), Some(request.text()))
+      }
   }
 
   implicit class HeaderValuesExt(headerMap: HeaderMap) {

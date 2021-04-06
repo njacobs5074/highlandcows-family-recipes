@@ -20,17 +20,24 @@ class wrapExceptions() extends cask.RawDecorator {
       case result: Result.Error.Exception =>
         result.t match {
           case apiError: ApiError =>
-            logger.warn(s"""${apiError.statusText.map(statusText => s"message=$statusText ").getOrElse("")}
+            val logMsg =
+              s"""${apiError.statusText.map(statusText => s"message=$statusText ").getOrElse("")}
                  |status=${apiError.statusCode}
-                 |${apiError.data.map(data => s"data=$data").getOrElse("")}""".stripMargin.replace('\n', ' '))
+                 |${apiError.data.map(data => s"data=$data").getOrElse("")}""".stripMargin.replace('\n', ' ')
+            if (apiError.logAtErrorLevel) {
+              logger.error(logMsg)
+            } else {
+              logger.warn(logMsg)
+            }
             Result.Success(CaskResponse[String](apiError.statusText.getOrElse(""), apiError.statusCode, apiError.headers))
           case t =>
-            val errmsg = Option(t.getMessage).getOrElse(t.getClass.getSimpleName)
-            logger.warn(s"""message=$errmsg status=500""".stripMargin.replace('\n', ' '))
-            Result.Success(CaskResponse[String](errmsg, 500))
+            val message = Option(t.getMessage).getOrElse(t.getClass.getSimpleName)
+            logger.warn(s"""message=$message status=500""".stripMargin.replace('\n', ' '))
+            Result.Success(CaskResponse[String](message, 500))
         }
 
-      case result => result
+      case result =>
+        result
     }
   }
 }
@@ -56,19 +63,7 @@ class authenticated(authenticAsUser: String) extends cask.RawDecorator {
           throw ApiError(401, headers = Seq("WWW-Authenticate" -> s"""Basic realm="${credentials.realm}""""))
         }
 
-      case None => throw ApiError(401, headers = Seq("WWW-Authenticate" -> s"""Basic realm="${credentials.realm}""""))
+      case None =>
+        throw ApiError(401, headers = Seq("WWW-Authenticate" -> s"""Basic realm="${credentials.realm}""""))
     }
-}
-
-/**
-  * Decorator that makes our user session cookie available to endpoints if they want it.
-  * Will be available as an additional argument, `session`
-  */
-class loggedIn() extends cask.RawDecorator {
-  lazy val sessionName: String = app.config.as[String]("webSessions.cookieName")
-
-  override def wrapFunction(request: Request, delegate: Delegate): Result[Raw] = {
-    val session: Option[cask.Cookie] = request.cookies.find(cookie => cookie._1 == sessionName).map(_._2)
-    delegate(Map("session" -> session))
-  }
 }

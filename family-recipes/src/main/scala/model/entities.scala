@@ -6,16 +6,18 @@ import java.util.Date
 case class User(username: String, password: String, familyRecipeInstanceId: Int, created: Date = new Date(), id: Int = 0) {
   var userSession: Option[UserSession] = None
   var familyRecipeInstance: Option[FamilyRecipeInstance] = None
+
+  def isAdmin: Boolean = familyRecipeInstance.exists(_.adminUser.exists(_.id == familyRecipeInstanceId))
 }
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 case class UserSession(
-  token: String,
-  userId: Int,
-  expiry: Date,
-  created: Date = new Date(),
-  sessionKey: Option[String] = None,
-  id: Int = 0
+    token: String,
+    userId: Int,
+    expiry: Date,
+    created: Date = new Date(),
+    sessionKey: Option[String] = None,
+    id: Int = 0
 ) {
   var user: Option[User] = None
 
@@ -28,11 +30,11 @@ object UserSession {
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 case class FamilyRecipeInstance(
-  name: String,
-  description: String,
-  adminId: Option[Int],
-  created: Date = new Date(),
-  id: Int = 0
+    name: String,
+    description: String,
+    adminId: Option[Int],
+    created: Date = new Date(),
+    id: Int = 0
 ) {
   var adminUser: Option[User] = None
 }

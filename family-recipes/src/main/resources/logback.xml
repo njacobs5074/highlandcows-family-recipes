@@ -9,7 +9,7 @@
 
   <logger name="com.zaxxer.hikari" level="info"/>
   <logger name="org.xnio" level="info"/>
-  <logger name="io.getquill.context.jdbc" level="info"/>
+  <logger name="io.getquill.context.jdbc" level="debug"/>
   <logger name="io.undertow" level="info"/>
 
   <root level="debug">

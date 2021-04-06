@@ -23,21 +23,25 @@ class FamilyRecipeInstanceService(database: Database) {
             .insert(FamilyRecipeInstance(familyRecipeInstanceDTO.name, familyRecipeInstanceDTO.description, adminId = None))
 
           // Then create the admin user and assign it to the new instance.
-          val (adminUser, tempPassword) = database.Users().find(familyRecipeInstanceDTO.adminUserEmail) match {
-            case Some(_) =>
-              throw api.ApiError(409, Some(s"User ${familyRecipeInstanceDTO.adminUserEmail} is already assigned to an instance"))
+          val (adminUser, tempPassword) =
+            database.Users().find(familyRecipeInstanceDTO.adminUserEmail) match {
+              case Some(_) =>
+                throw api.ApiError(
+                  409,
+                  Some(s"User ${familyRecipeInstanceDTO.adminUserEmail} is already assigned to an instance")
+                )
 
-            case None =>
-              // Create a temporary password for the admin user.
-              val tempPassword = RSU.randomPrint(20)
-              val passwordHash = util.secureHash(tempPassword)
-              (
-                database
-                  .Users()
-                  .insert(model.User(familyRecipeInstanceDTO.adminUserEmail, passwordHash, familyRecipeInstance.id)),
-                tempPassword
-              )
-          }
+              case None =>
+                // Create a temporary password for the admin user.
+                val tempPassword = RSU.randomPrint(20)
+                val passwordHash = util.secureHash(tempPassword)
+                (
+                  database
+                    .Users()
+                    .insert(model.User(familyRecipeInstanceDTO.adminUserEmail, passwordHash, familyRecipeInstance.id)),
+                  tempPassword
+                )
+            }
 
           // Copy the temporary password into the DTO so that we can send it back to the caller.
           // This will be the only time we'll share the plaintext version of it
@@ -56,10 +60,13 @@ class FamilyRecipeInstanceService(database: Database) {
         database.Users().update(user.copy(password = util.secureHash(resetAdminPasswordDTO.newPassword)))
 
       case Some(_) =>
-        throw api.ApiError(403)
+        throw api.AuthenticationError
 
       case None =>
         throw api.ApiError(404, Some(s"User not found"))
     }
   }
+
+  def list(): List[FamilyRecipeInstanceDTO] = database.FamilyRecipeInstances().list().map(dto.FamilyRecipeInstanceDTO(_))
+
 }

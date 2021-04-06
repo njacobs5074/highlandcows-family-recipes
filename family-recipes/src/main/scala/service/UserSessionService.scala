@@ -7,6 +7,14 @@ import java.util.{ Date, UUID }
 
 class UserSessionService(database: Database) {
 
+  def deleteSession(username: String): Unit = {
+    database.Users().find(username) match {
+      case Some(user) if user.userSession.isDefined =>
+        database.UserSessions().delete(user.userSession.get.id)
+      case _ =>
+    }
+  }
+
   def createNewSession(username: String): model.UserSession = {
 
     def newSession(userId: Int): model.UserSession = {
@@ -23,9 +31,16 @@ class UserSessionService(database: Database) {
         database.UserSessions().delete(existingSession.id)
         newSession(user.id)
 
-      case Some(user) => newSession(user.id)
+      case Some(user) =>
+        newSession(user.id)
 
-      case None => throw api.ApiError(404)
+      case None =>
+        throw api.ApiError(404)
     }
   }
+
+  def findBySessionKey(sessionKey: String): Option[model.UserSession] = {
+    database.UserSessions().findBySessionToken(sessionKey)
+  }
+
 }
