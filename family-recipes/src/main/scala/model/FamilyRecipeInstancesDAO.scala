@@ -5,10 +5,11 @@ class FamilyRecipeInstancesDAO(database: Database) {
   import database.ctx._
 
   /** Create a new FamilyRecipeInstance in the database */
-  def insert(familyRecipeInstance: FamilyRecipeInstance): FamilyRecipeInstance = database.ctx.transaction {
-    val id = database.ctx.run(database.schema.familyRecipeInstances.insert(lift(familyRecipeInstance)).returningGenerated(_.id))
-    database.ctx.run(database.schema.familyRecipeInstances.filter(_.id == lift(id))).head
-  }
+  def insert(familyRecipeInstance: FamilyRecipeInstance): FamilyRecipeInstance =
+    database.ctx.transaction {
+      val id = database.ctx.run(database.schema.familyRecipeInstances.insert(lift(familyRecipeInstance)).returningGenerated(_.id))
+      database.ctx.run(database.schema.familyRecipeInstances.filter(_.id == lift(id))).head
+    }
 
   /** Retrieve the specified instance of the web site */
   def find(id: Int): Option[FamilyRecipeInstance] = {
@@ -46,6 +47,18 @@ class FamilyRecipeInstancesDAO(database: Database) {
         case 0 | _ =>
           throw new RuntimeException(s"Failed to update $familyRecipeInstance")
       }
+    }
+  }
+
+  def list(): List[FamilyRecipeInstance] = {
+    val action = quote(for {
+      familyRecipeInstance <- database.schema.familyRecipeInstances
+      adminUser <- database.schema.users.leftJoin(users => familyRecipeInstance.adminId.contains(users.id))
+    } yield (familyRecipeInstance, adminUser))
+
+    database.ctx.run(action).map { case (familyRecipeInstance, maybeAdminUser) =>
+      familyRecipeInstance.adminUser = maybeAdminUser
+      familyRecipeInstance
     }
   }
 }
