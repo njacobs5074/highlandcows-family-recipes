@@ -29,7 +29,7 @@ class MainPage extends view.WebViewRoutes {
             dataToggle := "dropdown",
             aria.haspopup := "true",
             aria.expanded := "false"
-          )(i(cls := "bi-bookmark")("Favorites")),
+          )(i(cls := "bi-bookmark")(" Favorites")),
           div(cls := "dropdown-menu")(
             button(cls := "dropdown-item")("Rice Pudding"),
             button(cls := "dropdown-item")("Scones"),
@@ -41,15 +41,16 @@ class MainPage extends view.WebViewRoutes {
           button(
             `type` := "button",
             cls := "btn btn-outline-secondary dropdown-toggle",
+            dataToggle := "dropdown",
             aria.haspopup := true,
             aria.expanded := "false"
-          )(i(cls := "bi-person")("Reddie")),
+          )(i(cls := "bi bi-gear-wide-connected")(" Reddie")),
           div(cls := "dropdown-menu dropdown-menu-lg-right")(
             button(cls := "dropdown-item")("Profile"),
             button(cls := "dropdown-item")("Security/Privacy"),
             button(cls := "dropdown-item")("Help"),
             div(cls := "dropdown-divider"),
-            button(cls := "dropdown-item")("Logout")
+            a(cls := "dropdown-item", href := "/logout", role := "button")("Logout")
           )
         )
       )
@@ -99,6 +100,13 @@ class MainPage extends view.WebViewRoutes {
       case _ =>
         cask.Redirect("/")
     }
+  }
+
+  @view.loggedIn()
+  @cask.get("/logout")
+  def logout()(session: Option[cask.Cookie]): cask.Response[String] = {
+    session.foreach(cookie => service.UserSessionService().deleteSessionBySessionToken(cookie.value))
+    cask.Redirect("/")
   }
 
   initialize()
