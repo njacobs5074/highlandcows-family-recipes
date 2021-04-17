@@ -21,6 +21,20 @@ class loggedIn() extends cask.RawDecorator {
 }
 
 /**
+  * Decorator that retrieves the HTTP session state from the database associated with our cookie.
+  * Note that this does not require a user to be logged into the site to exist.
+  */
+class retrieveSession() extends cask.RawDecorator {
+  lazy val sessionName: String = app.config.as[String]("webSession.cookieName")
+
+  override def wrapFunction(request: Request, delegate: Delegate): Result[Raw] = {
+    val session: Option[cask.Cookie] = request.cookies.find(cookie => cookie._1 == sessionName).map(_._2)
+
+    delegate(Map("session" -> session))
+  }
+}
+
+/**
   * Decorator that if we get an unexpected exception will send the user to an error page
   * and will also log the issue at the error level (which will send it to our bug tracker)
   */

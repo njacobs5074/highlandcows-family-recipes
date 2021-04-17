@@ -1,5 +1,7 @@
 package model
 
+import play.api.libs.json.JsValue
+
 import java.util.Date
 
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
@@ -17,6 +19,7 @@ case class UserSession(
     expiry: Date,
     created: Date = new Date(),
     sessionKey: Option[String] = None,
+    metaData: Option[JsValue] = None,
     id: Int = 0
 ) {
   var user: Option[User] = None

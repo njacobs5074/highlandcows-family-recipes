@@ -29,7 +29,7 @@ class MainPage extends view.WebViewRoutes {
             dataToggle := "dropdown",
             aria.haspopup := "true",
             aria.expanded := "false"
-          )(i(cls := "bi-bookmark")("&nbsp;Favorites")),
+          )(i(cls := "bi-bookmark")("Favorites")),
           div(cls := "dropdown-menu")(
             button(cls := "dropdown-item")("Rice Pudding"),
             button(cls := "dropdown-item")("Scones"),
@@ -43,7 +43,7 @@ class MainPage extends view.WebViewRoutes {
             cls := "btn btn-outline-secondary dropdown-toggle",
             aria.haspopup := true,
             aria.expanded := "false"
-          )(i(cls := "bi-person")("&nbsp;Reddie")),
+          )(i(cls := "bi-person")("Reddie")),
           div(cls := "dropdown-menu dropdown-menu-lg-right")(
             button(cls := "dropdown-item")("Profile"),
             button(cls := "dropdown-item")("Security/Privacy"),
@@ -91,7 +91,7 @@ class MainPage extends view.WebViewRoutes {
               pageContent = List(mainPage),
               stylesheets = List(link(rel := "stylesheet", href := "/view/css/main-page.css"), bootstrap.iconsCSS)
             )
-            cask.Response(body.render, 200, headers = Seq("content-type" -> body.httpContentType.get))
+            view.HtmlResponse(body)
           case _ =>
             cask.Redirect("/")
         }

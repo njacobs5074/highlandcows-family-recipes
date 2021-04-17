@@ -1,5 +1,6 @@
 package api
 
+import dto.JsonExt
 import org.slf4j.{ Logger, LoggerFactory }
 
 class AdminController extends ApiRoutes {
@@ -7,10 +8,10 @@ class AdminController extends ApiRoutes {
 
   @authenticated("createInstance")
   @cask.get("/admin")
-  def list(): String = {
+  def list(): cask.Response[String] = {
     val response = service.FamilyRecipeInstanceService().list()
 
-    upickle.default.write(api.Response(200, data = Some(upickle.default.writeJs(response))))
+    cask.Response[String](api.Response(200, data = Some(response.toJson)))
   }
 
   /** Web endpoint to create a new family recipe web site instance. We only
@@ -19,23 +20,23 @@ class AdminController extends ApiRoutes {
     */
   @authenticated("createInstance")
   @cask.post("/admin/familyRecipeInstance")
-  def familyRecipeInstance(request: cask.Request): String = {
+  def familyRecipeInstance(request: cask.Request): cask.Response[String] = {
 
     val payload = request.as[dto.FamilyRecipeInstanceDTO]
     val response = service.FamilyRecipeInstanceService().createFamilyRecipeInstance(payload)
 
-    upickle.default.write(api.Response(200, Some("Created"), data = Some(upickle.default.writeJs(response))))
+    cask.Response[String](api.Response(200, data = Some(response.toJson)))
   }
 
   /** Endpoint to allow resetting an admin user's password */
   @authenticated("createInstance")
   @cask.post("/admin/resetAdminPassword")
-  def resetAdminPassword(request: cask.Request): String = {
+  def resetAdminPassword(request: cask.Request): cask.Response[String] = {
 
     val payload = request.as[dto.ResetAdminPasswordDTO]
     service.FamilyRecipeInstanceService().resetAdminPassword(payload)
 
-    upickle.default.write(api.Response(200, Some("Password updated")))
+    cask.Response[String](api.Response(200))
   }
 
   initialize()

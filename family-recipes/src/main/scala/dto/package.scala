@@ -1,4 +1,4 @@
-import upickle.default.{ ReadWriter => RW, macroRW }
+import play.api.libs.json._
 
 package object dto {
 
@@ -15,17 +15,21 @@ package object dto {
       )
     }
 
-    implicit val rw: RW[FamilyRecipeInstanceDTO] = macroRW
+    implicit val format: Format[FamilyRecipeInstanceDTO] = Json.format[FamilyRecipeInstanceDTO]
   }
 
   case class UserDTO(username: String, password: String, familyRecipeInstance: String)
   object UserDTO {
-    implicit val rw: RW[UserDTO] = macroRW
+    implicit val format: Format[UserDTO] = Json.format[UserDTO]
   }
 
   case class ResetAdminPasswordDTO(adminUserEmail: String, oldPassword: String, newPassword: String)
   object ResetAdminPasswordDTO {
-    implicit val rw: RW[ResetAdminPasswordDTO] = macroRW
+    implicit val format: Format[ResetAdminPasswordDTO] = Json.format[ResetAdminPasswordDTO]
+  }
+
+  implicit class JsonExt[T](data: T)(implicit writes: Writes[T]) {
+    def toJson: JsValue = Json.toJson(data)
   }
 
 }
