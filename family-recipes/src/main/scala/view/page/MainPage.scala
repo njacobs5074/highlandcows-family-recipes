@@ -18,8 +18,8 @@ class MainPage extends view.WebViewRoutes {
         aria.expanded := "false",
         aria.label := "Toggle navigation"
       )(span(cls := "navbar-toggler-icon")),
-      div(cls := "collapse navbar-collapse justify-content-md", id := "navbarSupportedContent")(
-        form(cls := "form-inline my-2 my-lg=0")(
+      div(cls := "collapse navbar-collapse justify-content-md-end", id := "navbarSupportedContent")(
+        form(cls := "form-inline my-2 my-lg-0")(
           input(`type` := "text", cls := "form-control mr-sm-2", placeholder := "Search for...")
         ),
         div(cls := "btn-group mr-2")(
@@ -37,7 +37,7 @@ class MainPage extends view.WebViewRoutes {
             button(cls := "dropdown-item")("Pasta")
           )
         ),
-        div(cls := "btn-group mr-2")(
+        div(cls := "btn-group")(
           button(
             `type` := "button",
             cls := "btn btn-outline-secondary dropdown-toggle",
@@ -57,24 +57,23 @@ class MainPage extends view.WebViewRoutes {
     ),
     div(cls := "jumbotron")(
       div(cls := "container")(
-        h1(cls := "display-3")("Yassa Poulet"),
+        h2("Yassa Poulet"),
         div(cls := "text-center")(
           img(cls := "img-fluid rounded", src := "/view/images/yassa-poulet.jpg", alt := "Yassa Poulet")
         ),
         p(cls := "lead")("An old family favorite captured here for easy reference!")
       ),
       div(cls := "container")(
-        h2("Ingredients")(
-          ul(
-            li(
-              """Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                |sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.""".stripMargin.replace('\n', ' ')
-            ),
-            li("Tellus orci ac auctor augue mauris augue neque."),
-            li("Interdum velit laoreet id donec ultrices tincidunt arcu non."),
-            li("Diam phasellus vestibulum lorem sed risus ultricies tristique nulla."),
-            li("Nisl purus in mollis nunc sed id semper risus.")
-          )
+        h2("Ingredients"),
+        ul(
+          li(
+            p("""Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                |sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.""".stripMargin.replace('\n', ' '))
+          ),
+          li(p("Tellus orci ac auctor augue mauris augue neque.")),
+          li(p("Interdum velit laoreet id donec ultrices tincidunt arcu non.")),
+          li(p("Diam phasellus vestibulum lorem sed risus ultricies tristique nulla.")),
+          li(p("Nisl purus in mollis nunc sed id semper risus."))
         )
       )
     )

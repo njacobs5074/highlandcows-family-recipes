@@ -2,6 +2,7 @@ package view.page
 
 import scalatags.Text.all._
 import view.trapToErrorPage
+import view.tags._
 
 import scala.util.{ Failure, Success, Try }
 
@@ -14,7 +15,7 @@ class LoginPage extends view.WebViewRoutes {
     val passwordField = fields.get("password")
 
     div(
-      view.tags.nav(cls := "navbar navbar-expand-lg navbar-light bg-light fixed-top")(
+      nav(cls := "navbar navbar-expand-md navbar-light bg-light fixed-top")(
         a(cls := "navbar-brand", href := "#")("Family Recipes"),
         button(
           cls := "navbar-toggler",
@@ -25,7 +26,7 @@ class LoginPage extends view.WebViewRoutes {
           aria.label := "Toggle Navigation",
           aria.expanded := "false"
         )(span(cls := "navbar-toggler-icon")),
-        div(cls := "collapse navbar-collapse justify-content-end", id := "navbarSupportedContent")(
+        div(cls := "collapse navbar-collapse justify-content-md-end", id := "navbarSupportedContent")(
           form(cls := "form-inline my-2 my-lg-0", action := "/login", method := "post")(
             input(
               id := "email",
