@@ -13,6 +13,7 @@ object Dependencies {
     "com.iheart" %% "ficus" % "1.5.0",
     "commons-codec" % "commons-codec" % "1.15",
     "org.apache.commons" % "commons-lang3" % "3.12.0",
-    "org.apache.commons" % "commons-email" % "1.5"
+    "org.apache.commons" % "commons-email" % "1.5",
+    "com.typesafe.play" %% "play-json" % "2.9.2"
   )
 }

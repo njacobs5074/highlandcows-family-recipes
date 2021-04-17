@@ -32,7 +32,7 @@ class wrapExceptions() extends cask.RawDecorator {
             Result.Success(CaskResponse[String](apiError.statusText.getOrElse(""), apiError.statusCode, apiError.headers))
           case t =>
             val message = Option(t.getMessage).getOrElse(t.getClass.getSimpleName)
-            logger.warn(s"""message=$message status=500""".stripMargin.replace('\n', ' '))
+            logger.warn(s"""message=$message status=500""".stripMargin.replace('\n', ' '), t)
             Result.Success(CaskResponse[String](message, 500))
         }
 

@@ -3,6 +3,7 @@ import io.getquill.{ PostgresJdbcContext, SnakeCase }
 import net.ceedubs.ficus.Ficus._
 import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import org.postgresql.ds.PGSimpleDataSource
+import play.api.libs.json.{ JsValue, Json }
 import util.config
 
 package object model {
@@ -21,6 +22,15 @@ package object model {
     def close(): Unit = dataSource.close()
 
     implicit val ctx: PostgresJdbcContext[SnakeCase] = new PostgresJdbcContext(SnakeCase, dataSource)
+    import ctx._
+
+    // We need to handcraft reading & writing JSON via Play JSON to and from PostgreSQL
+    implicit val decodeJson: Decoder[JsValue] = {
+      decoder((index, row) => Json.parse(row.getObject(index).toString))
+    }
+    implicit val encodeJson: Encoder[JsValue] = {
+      encoder(java.sql.Types.OTHER, (index, value, row) => row.setObject(index, value, java.sql.Types.OTHER))
+    }
 
     // This object provides the mapping between our entity Scala classes and the actual database schema
     // If the schema is changed, this mapping needs to be updated.
@@ -30,6 +40,7 @@ package object model {
       // We need to be careful we don't widen the type of these schema objects as this will cause
       // us to use dynamic queries and we want Quill to generate compile-time code.
 
+      //noinspection TypeAnnotation
       val users = quote {
         querySchema[User](
           "users",
@@ -41,6 +52,7 @@ package object model {
         )
       }
 
+      //noinspection TypeAnnotation
       val userSessions = quote {
         querySchema[UserSession](
           "user_sessions",
@@ -49,10 +61,12 @@ package object model {
           _.sessionKey -> "session_key",
           _.expiry -> "expiry",
           _.created -> "created",
+          _.metaData -> "metadata",
           _.id -> "id"
         )
       }
 
+      //noinspection TypeAnnotation
       val familyRecipeInstances = quote {
         querySchema[FamilyRecipeInstance](
           "family_recipe_instances",

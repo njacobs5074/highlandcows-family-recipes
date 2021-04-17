@@ -25,4 +25,10 @@ package object page {
       )
     )
   }
+
+  case class Field(name: String,
+                   value: Option[String] = None,
+                   isValid: Option[Boolean] = None,
+                   placeholder: Option[String] = None
+  )
 }

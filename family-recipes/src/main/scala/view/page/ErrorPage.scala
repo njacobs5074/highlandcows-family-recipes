@@ -33,7 +33,7 @@ class ErrorPage extends cask.Routes {
       extraAttributes = List(cls := "d-flex flex-column h-100")
     )
 
-    cask.Response(body.render, 200, headers = Seq("content-type" -> body.httpContentType.get))
+    view.HtmlResponse(body)
 
   }
 

@@ -3,6 +3,7 @@ package model
 class UsersDAO(database: Database) {
 
   import database.ctx._
+  import database._
 
   /** Insert the specified user into the database */
   def insert(user: User): User =

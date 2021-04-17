@@ -15,6 +15,13 @@ class UserSessionService(database: Database) {
     }
   }
 
+  def deleteSessionBySessionToken(sessionToken: String): Unit = {
+    database
+      .UserSessions()
+      .findBySessionToken(sessionToken)
+      .foreach(userSession => database.UserSessions().delete(userSession.id))
+  }
+
   def createNewSession(username: String): model.UserSession = {
 
     def newSession(userId: Int): model.UserSession = {
