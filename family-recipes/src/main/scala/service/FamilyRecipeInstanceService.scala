@@ -7,8 +7,8 @@ import org.apache.commons.lang3.{ RandomStringUtils => RSU }
 class FamilyRecipeInstanceService(database: Database) {
 
   /** Create an instance of the specified family recipe site. We do the necessary checks to ensure that
-    * duplicate sites and/or admin users are not creatd.
-    */
+   *  duplicate sites and/or admin users are not creatd.
+   */
   def createFamilyRecipeInstance(familyRecipeInstanceDTO: FamilyRecipeInstanceDTO): FamilyRecipeInstanceDTO = {
     database.ctx.transaction {
 

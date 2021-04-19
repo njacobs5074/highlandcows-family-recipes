@@ -15,9 +15,9 @@ class AdminController extends ApiRoutes {
   }
 
   /** Web endpoint to create a new family recipe web site instance. We only
-    * allowed specially authenticated callers to connect to this endpoint.
-    * See `application.conf` for the definition of this information.
-    */
+   *  allowed specially authenticated callers to connect to this endpoint.
+   *  See `application.conf` for the definition of this information.
+   */
   @authenticated("createInstance")
   @cask.post("/admin/familyRecipeInstance")
   def familyRecipeInstance(request: cask.Request): cask.Response[String] = {

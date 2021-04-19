@@ -15,8 +15,8 @@ case class User(username: String, password: String, familyRecipeInstanceId: Int,
 @SuppressWarnings(Array("scalafix:DisableSyntax.var"))
 case class UserSession(
     token: String,
-    userId: Int,
     expiry: Date,
+    userId: Option[Int] = None,
     created: Date = new Date(),
     sessionKey: Option[String] = None,
     metaData: Option[JsValue] = None,
@@ -25,6 +25,8 @@ case class UserSession(
   var user: Option[User] = None
 
   def isExpired: Boolean = new Date().after(expiry)
+  val isAuthenticated: Boolean = userId.isDefined
+  def isValid: Boolean = isAuthenticated && !isExpired
 }
 
 object UserSession {

@@ -4,6 +4,8 @@ ThisBuild / scalaVersion := "2.13.5"
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0"
 
+resolvers += "Lightbend Repo" at "https://repo.lightbend.com/"
+
 // Set up FlywayDB plugin for DB migrations
 // https://davidmweber.github.io/flyway-sbt-docs/index.html
 enablePlugins(FlywayPlugin)

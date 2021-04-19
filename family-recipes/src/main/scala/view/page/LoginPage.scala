@@ -1,8 +1,7 @@
 package view.page
-
 import scalatags.Text.all._
-import view.trapToErrorPage
 import view.tags._
+import view.trapToErrorPage
 
 import scala.util.{ Failure, Success, Try }
 
@@ -60,55 +59,46 @@ class LoginPage extends view.WebViewRoutes {
     )
   }
 
-  @view.loggedIn()
+  @view.useWebSession()
   @cask.get("/login")
   def login()(session: Option[cask.Cookie]): cask.Response[String] = {
+    lazy val body = page(
+      title = "Family Recipes - Login",
+      pageContent = List(loginForm),
+      stylesheets = List(link(rel := "stylesheet", href := "/view/css/login.css"))
+    )
     session match {
       case Some(webSession) =>
-        service.UserSessionService().findBySessionKey(webSession.value) match {
-          case Some(userSession) if !userSession.isExpired =>
+        service.UserSessionService().findBySessionToken(webSession.value) match {
+          case Some(userSession) if userSession.isValid =>
             redirectWithSession(userSession, "/main")
 
           case _ =>
-            val body = page(
-              title = "Family Recipes - Login",
-              pageContent = List(loginForm),
-              stylesheets = List(link(rel := "stylesheet", href := "/view/css/login.css"))
-            )
             view.HtmlResponse(body)
         }
       case _ =>
-        val body = page(
-          title = "Family Recipes - Login",
-          pageContent = List(loginForm),
-          stylesheets = List(link(rel := "stylesheet", href := "/view/css/login.css"))
-        )
         view.HtmlResponse(body)
     }
   }
 
   @trapToErrorPage()
   @cask.postForm("/login")
-  def login(email: String, password: String): cask.Response[String] = {
-    // NB: The argument names must match exactly what is the login form above
-    Try(service.UserService().authenticate(email, password)) match {
-      case Success(user) if user.userSession.isDefined =>
+  def login(email: String, password: String, request: cask.Request): cask.Response[String] = {
+    Try(service.UserService().authenticate(email, password, request.getSessionCookie.map(_.value))) match {
+      case Success(user) if user.userSession.exists(_.isValid) =>
         redirectWithSession(user.userSession.get, "/main")
 
       case Success(user) =>
-        logger.error(s"Failed to create session for user ${user.username}")
-        throw api.ApiError(500, Some(s"Failed to create user session for user ${user.username}"))
+        throw api.ApiError(500, Some(s"Failed to create session correctly for user ${user.username}"))
 
       case Failure(apiError: api.ApiError) if apiError.statusCode == 403 =>
         logger.warn(s"Failed to authenticate: $email")
-        cask.Redirect("/")
+        cask.Redirect("/login")
 
       case Failure(apiError: api.ApiError) =>
-        service.UserSessionService().deleteSession(email)
         throw apiError
 
       case Failure(t) =>
-        service.UserSessionService().deleteSession(email)
         throw t
     }
   }
