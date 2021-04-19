@@ -8,17 +8,21 @@ class MainApp extends api.ApiRoutes with view.WebViewRoutes {
   @cask.staticResources("/view")
   def staticResources(): String = "view"
 
-  @view.loggedIn()
+  @view.useWebSession()
   @cask.get("/")
   def index()(session: Option[cask.Cookie]): cask.Response[String] = {
     session match {
       case Some(webSession) =>
-        service.UserSessionService().findBySessionKey(webSession.value) match {
-          case Some(userSession) if !userSession.isExpired =>
+        service.UserSessionService().findBySessionToken(webSession.value) match {
+          case Some(userSession) if userSession.isValid =>
             redirectWithSession(userSession, "/main")
 
-          case _ =>
-            cask.Redirect("/login")
+          case Some(userSession) =>
+            redirectWithSession(userSession, "/login")
+
+          case None =>
+            val newSession = service.UserSessionService().createNewSession()
+            redirectWithSession(newSession, "/login")
         }
       case None =>
         cask.Redirect("/login")

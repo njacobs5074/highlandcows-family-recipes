@@ -16,13 +16,13 @@ class UsersDAO(database: Database) {
   def find(id: Int): Option[User] = {
     val action = quote(for {
       user <- database.schema.users.filter(_.id == lift(id))
+      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId.contains(user.id))
       familyRecipeInstance <- database.schema.familyRecipeInstances.leftJoin(familyRecipeInstance =>
         familyRecipeInstance.id == user.familyRecipeInstanceId
       )
-      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
-    } yield (user, familyRecipeInstance, userSession))
+    } yield (user, userSession, familyRecipeInstance))
 
-    database.ctx.run(action).headOption.map { case (user, maybeFamilyRecipeInstance, maybeUserSession) =>
+    database.ctx.run(action).headOption.map { case (user, maybeUserSession, maybeFamilyRecipeInstance) =>
       user.familyRecipeInstance = maybeFamilyRecipeInstance
       user.userSession = maybeUserSession
       user
@@ -32,12 +32,12 @@ class UsersDAO(database: Database) {
   def find(username: String): Option[User] = {
     val action = quote(for {
       user <- database.schema.users.filter(_.username == lift(username))
+      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId.contains(user.id))
       familyRecipeInstance <-
         database.schema.familyRecipeInstances.join(familyRecipeInstance => familyRecipeInstance.id == user.familyRecipeInstanceId)
-      userSession <- database.schema.userSessions.leftJoin(userSession => userSession.userId == user.id)
-    } yield (user, familyRecipeInstance, userSession))
+    } yield (user, userSession, familyRecipeInstance))
 
-    database.ctx.run(action).headOption.map { case (user, familyRecipeInstance, maybeUserSession) =>
+    database.ctx.run(action).headOption.map { case (user, maybeUserSession, familyRecipeInstance) =>
       user.familyRecipeInstance = Some(familyRecipeInstance)
       user.userSession = maybeUserSession
       user
