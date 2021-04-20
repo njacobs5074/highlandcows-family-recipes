@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Base64
 import org.slf4j.{ Logger, LoggerFactory }
 import util.config
 import util.config.BasicAuthConfig
+import util.helpers.caskExt._
 
 /** Decorator the catches exceptions and maps them to specific responses */
 class wrapExceptions() extends cask.RawDecorator {

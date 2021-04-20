@@ -1,5 +1,7 @@
 package view.page
+
 import scalatags.Text.all._
+import util.helpers.caskExt._
 import view.tags._
 import view.trapToErrorPage
 
@@ -84,7 +86,7 @@ class LoginPage extends view.WebViewRoutes {
   @trapToErrorPage()
   @cask.postForm("/login")
   def login(email: String, password: String, request: cask.Request): cask.Response[String] = {
-    Try(service.UserService().authenticate(email, password, request.getSessionCookie.map(_.value))) match {
+    Try(service.UserService().authenticate(email, password, request.getSessionCookie(sessionCookie).map(_.value))) match {
       case Success(user) if user.userSession.exists(_.isValid) =>
         redirectWithSession(user.userSession.get, "/main")
 
