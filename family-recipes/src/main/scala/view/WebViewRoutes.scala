@@ -29,9 +29,4 @@ trait WebViewRoutes extends cask.Routes {
         throw api.ApiError(500, Some(s"User session for user ${userSession.user.get.username} not correctly created"))
     }
   }
-
-  implicit class CaskRequestExt(request: cask.Request) {
-    def getSessionCookie: Option[cask.Cookie] =
-      Option(request.exchange.getRequestCookie(sessionCookie)).map(cask.Cookie.fromUndertow)
-  }
 }

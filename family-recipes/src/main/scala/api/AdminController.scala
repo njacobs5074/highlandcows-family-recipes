@@ -2,6 +2,7 @@ package api
 
 import dto.JsonExt
 import org.slf4j.{ Logger, LoggerFactory }
+import util.helpers.caskExt._
 
 class AdminController extends ApiRoutes {
   val logger: Logger = LoggerFactory.getLogger(getClass)
