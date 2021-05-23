@@ -9,3 +9,5 @@ target
 /.g8
 /.metals
 /.bloop
+/project/metals.sbt
+/project/project/

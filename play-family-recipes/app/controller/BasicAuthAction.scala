@@ -54,10 +54,14 @@ class BasicAuthAction @Inject() (
         case Array(username, password) if authConfig.isAuthorized(username, password) =>
           block(request)
         case _ =>
-          Future.successful(AuthenticationError().asStatus.withHeaders(HeaderNames.WWW_AUTHENTICATE -> "family-recipes"))
+          Future.successful(
+            AuthenticationError().asStatus.withHeaders(HeaderNames.WWW_AUTHENTICATE -> "Basic realm=family-recipes")
+          )
       }
 
-    }.getOrElse(Future.successful(AuthenticationError().asStatus.withHeaders(HeaderNames.WWW_AUTHENTICATE -> "family-recipes")))
+    }.getOrElse(Future.successful(
+      AuthenticationError().asStatus.withHeaders(HeaderNames.WWW_AUTHENTICATE -> "Basic realm=family-recipes")
+    ))
 
   }
 }

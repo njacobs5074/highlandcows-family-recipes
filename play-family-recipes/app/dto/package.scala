@@ -16,7 +16,7 @@ package object dto {
 
   object FamilyRecipeInstanceDTO {
 
-    def apply(familyRecipeInstance: model.FamilyRecipeInstance): FamilyRecipeInstanceDTO = {
+    def apply(familyRecipeInstance: model.FamilyRecipeInstance, obfuscatePassword: Boolean = false): FamilyRecipeInstanceDTO = {
       val adminUser = familyRecipeInstance.adminUser.getOrElse {
         throw new ApiError(INTERNAL_SERVER_ERROR, Some(s"Require adminUser to be populated: id=${familyRecipeInstance.id}"))
       }
@@ -24,14 +24,14 @@ package object dto {
         familyRecipeInstance.name,
         familyRecipeInstance.description,
         adminUser.username,
-        Some(adminUser.password)
+        Some(if (obfuscatePassword) "***" else adminUser.password)
       )
     }
 
     implicit val format: Format[FamilyRecipeInstanceDTO] = Json.format[FamilyRecipeInstanceDTO]
   }
 
-  case class UserDTO(username: String, password: String, familyRecipeInstance: String)
+  case class UserDTO(username: String, password: String, familyRecipeInstanceName: String)
   object UserDTO {
     implicit val format: Format[UserDTO] = Json.format[UserDTO]
   }

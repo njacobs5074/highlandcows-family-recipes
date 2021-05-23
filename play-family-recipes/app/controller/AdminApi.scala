@@ -2,6 +2,7 @@ package controller
 
 import dto.{ FamilyRecipeInstanceDTO, ResetUserPasswordDTO }
 import play.api.Logging
+import play.api.http.{ ContentTypes, HeaderNames }
 import play.api.libs.json.{ JsValue, Json }
 import play.api.mvc._
 import service.{ FamilyRecipeInstanceService, UsersService }
@@ -38,7 +39,8 @@ class AdminApi @Inject() (
   def list = basicAuthAction.async { _ =>
     familyRecipeInstanceService.list().asTry.map {
       case Success(response) =>
-        Ok(Json.toJson(response.map(FamilyRecipeInstanceDTO(_))))
+        Ok(Json.toJson(response.map(FamilyRecipeInstanceDTO(_, obfuscatePassword = true))))
+          .withHeaders(HeaderNames.CONTENT_TYPE -> ContentTypes.JSON)
       case Failure(apiError: ApiError) =>
         apiError.asStatus
       case Failure(t) =>

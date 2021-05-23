@@ -23,7 +23,7 @@ class UsersService @Inject() (
       case Some(user)
           if user.familyRecipeInstance.isDefined &&
             resetUserPasswordDTO.oldPassword.secureHash(secretKey) == user.password =>
-        usersDAO.update(user.copy(resetUserPasswordDTO.newPassword.secureHash(secretKey))).map(_ =>
+        usersDAO.update(user.copy(password = resetUserPasswordDTO.newPassword.secureHash(secretKey))).map(_ =>
           UserDTO(user.username, resetUserPasswordDTO.newPassword, user.familyRecipeInstance.get.name))
 
       case Some(_) =>

@@ -26,7 +26,7 @@ package object controller {
   }
 
   case class AuthenticationError(override val data: Option[Any] = None)
-      extends ApiError(FORBIDDEN, Some("Authentication failed"), data = data)
+      extends ApiError(UNAUTHORIZED, Some("Authentication failed"), data = data)
 
   implicit class RequestHeaderExt(requestHeader: RequestHeader) {
     def getAuthorization: Option[String] = requestHeader.headers.get("Authorization")

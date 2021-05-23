@@ -40,9 +40,8 @@ class UsersDAO @Inject() (
   def find(username: String): Future[Option[User]] =
     db.run(findQuery(username))
 
-  def update(user: User): Future[User] = {
+  def update(user: User): Future[User] =
     db.run(updateQuery(user))
-  }
 
   private[model] def insertQuery(user: User): DBIO[User] =
     (users returning users) += user

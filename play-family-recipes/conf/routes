@@ -9,9 +9,8 @@ GET       /                           controller.HomeController.index()
 # Map static resources from the /public folder to the /assets URL path
 GET       /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
+# Admin interfaces - These are all intended to be used as WSAPI endpoints
 POST	    /api/admin/instance	        controller.AdminApi.instance	                      
-
-GET	      /api/admin	                controller.AdminApi.list
-
+GET	      /api/admin/instance	        controller.AdminApi.list
 POST	    /api/admin/resetPassword	  controller.AdminApi.resetPassword	                      
 
